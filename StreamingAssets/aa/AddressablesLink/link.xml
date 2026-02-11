@@ -4,6 +4,7 @@
     <type fullname="ControlPausa" preserve="all" />
     <type fullname="MenuNivelesUI" preserve="all" />
     <type fullname="MenuUI" preserve="all" />
+    <type fullname="NivelItemUI" preserve="all" />
     <type fullname="OpcionesUI" preserve="all" />
     <type fullname="ReproductorSfxPrueba" preserve="all" />
   </assembly>
@@ -115,6 +116,7 @@
     <type fullname="UnityEngine.UI.CanvasScaler" preserve="all" />
     <type fullname="UnityEngine.UI.GraphicRaycaster" preserve="all" />
     <type fullname="UnityEngine.UI.Image" preserve="all" />
+    <type fullname="UnityEngine.UI.LayoutElement" preserve="all" />
     <type fullname="UnityEngine.UI.Mask" preserve="all" />
     <type fullname="UnityEngine.UI.Scrollbar" preserve="all" />
     <type fullname="UnityEngine.UI.ScrollRect" preserve="all" />
