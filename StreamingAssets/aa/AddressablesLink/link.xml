@@ -1,6 +1,7 @@
 <linker>
   <assembly fullname="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
     <type fullname="AdaptadorLayoutPorAspecto" preserve="all" />
+    <type fullname="BotonOnScreenSeguro" preserve="all" />
     <type fullname="CanalAudioFuente" preserve="all" />
     <type fullname="ControlPausa" preserve="all" />
     <type fullname="ControlTouchCanvas" preserve="all" />
@@ -20,7 +21,6 @@
   <assembly fullname="Unity.InputSystem, Version=1.18.0.0, Culture=neutral, PublicKeyToken=null">
     <type fullname="UnityEngine.InputSystem.InputActionAsset" preserve="all" />
     <type fullname="UnityEngine.InputSystem.InputActionReference" preserve="all" />
-    <type fullname="UnityEngine.InputSystem.OnScreen.OnScreenButton" preserve="all" />
     <type fullname="UnityEngine.InputSystem.UI.InputSystemUIInputModule" preserve="all" />
     <type fullname="UnityEngine.InputSystem.InputAction" preserve="nothing" serialized="true" />
     <type fullname="UnityEngine.InputSystem.InputActionMap" preserve="nothing" serialized="true" />
