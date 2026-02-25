@@ -2,7 +2,6 @@
   <assembly fullname="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
     <type fullname="AdaptadorLayoutPorAspecto" preserve="all" />
     <type fullname="ArrastreLookUI" preserve="all" />
-    <type fullname="BotonOnScreenSeguro" preserve="all" />
     <type fullname="CanalAudioFuente" preserve="all" />
     <type fullname="ControlPausa" preserve="all" />
     <type fullname="ControlTouchCanvas" preserve="all" />
@@ -105,6 +104,7 @@
     <type fullname="UnityEngine.UI.GraphicRaycaster" preserve="all" />
     <type fullname="UnityEngine.UI.HorizontalLayoutGroup" preserve="all" />
     <type fullname="UnityEngine.UI.Image" preserve="all" />
+    <type fullname="UnityEngine.UI.LayoutElement" preserve="all" />
     <type fullname="UnityEngine.UI.VerticalLayoutGroup" preserve="all" />
     <type fullname="UnityEngine.UI.AnimationTriggers" preserve="nothing" serialized="true" />
     <type fullname="UnityEngine.UI.Button/ButtonClickedEvent" preserve="nothing" serialized="true" />
