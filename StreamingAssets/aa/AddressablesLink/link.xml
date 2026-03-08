@@ -1,14 +1,21 @@
 <linker>
   <assembly fullname="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="AccionPuertaBifold" preserve="all" />
+    <type fullname="AccionPuertaBisagra" preserve="all" />
     <type fullname="AdaptadorLayoutPorAspecto" preserve="all" />
     <type fullname="ArrastreLookUI" preserve="all" />
     <type fullname="CanalAudioFuente" preserve="all" />
     <type fullname="ControlPausa" preserve="all" />
     <type fullname="ControlTouchCanvas" preserve="all" />
     <type fullname="DebugEntradaMovilOverlay" preserve="all" />
+    <type fullname="Interactuable" preserve="all" />
     <type fullname="Mapbox.Unity.Map.AbstractMap" preserve="all" />
     <type fullname="Mapbox.Unity.MeshGeneration.Data.AtlasInfo" preserve="all" />
+    <type fullname="PromptInteraccionUI" preserve="all" />
+    <type fullname="ProveedorPromptPuertaBifold" preserve="all" />
+    <type fullname="ProveedorPromptPuertaBisagra" preserve="all" />
     <type fullname="PuntoSpawnJugador" preserve="all" />
+    <type fullname="RegistradorUIInteraccionEscena" preserve="all" />
     <type fullname="ReproductorSfxPrueba" preserve="all" />
     <type fullname="SafeAreaUI" preserve="all" />
     <type fullname="ScriptablePalette" preserve="all" />
@@ -130,6 +137,7 @@
     <type fullname="UnityEngine.Light" preserve="all" />
     <type fullname="UnityEngine.LightingSettings" preserve="all" />
     <type fullname="UnityEngine.LightmapSettings" preserve="all" />
+    <type fullname="UnityEngine.LightProbeGroup" preserve="all" />
     <type fullname="UnityEngine.LightProbes" preserve="all" />
     <type fullname="UnityEngine.Material" preserve="all" />
     <type fullname="UnityEngine.Mesh" preserve="all" />
