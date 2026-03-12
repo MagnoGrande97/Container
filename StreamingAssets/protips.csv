@@ -1,50 +1,50 @@
-﻿Before powering on, scan for loose tubes, cables, and connectors.|ALL
-A clean sensor is a reliable sensor—wipe it before trusting the reading.|ALL
-If a value looks “too perfect,” verify with a second measurement.|ALL
-Treat alarms as information, not noise—identify the cause before silencing.|ALL
-Confirm the device mode matches the clinical goal, not just the last setting used.|ALL
-Check the patient interface first: mask seal, tubing kinks, and fit solve many “device problems.”|ALL
-When changing settings, adjust one parameter at a time to track cause and effect.|ALL
-Trend beats snapshot: compare values over minutes, not seconds.|ALL
-If the waveform looks wrong, inspect the line—occlusions and leaks distort everything.|ALL
-A quick pre-use checklist prevents a long troubleshooting session later.|ALL
-"Label lines and ports; confusion loves unlabeled connections."|ALL
-Use the “pause and point” habit: point to the parameter you’re changing, then confirm out loud.|ALL
-Low battery warnings are a countdown—plan your next steps immediately.|ALL
-"Calibrate when recommended; “close enough” drifts over time."|ALL
-Verify disposables match the correct type and size before assembly.|ALL
-A small leak can mimic a big problem—listen, feel, and inspect seals.|ALL
-"Avoid overtightening connectors; damaged threads create recurring leaks."|ALL
-If you swap a component, re-check the full system path from source to patient.|ALL
-Make room for airflow: blocked vents lead to heat issues and unstable performance.|ALL
-Keep the cable path tidy—strain relief reduces disconnections mid-procedure.|ALL
-"Don’t chase a single number; cross-check with the patient’s clinical signs."|ALL
-"Set alarm limits intentionally; default thresholds are not “one size fits all.”"|ALL
-Use priority thinking: address life-critical alarms before comfort alarms.|ALL
-When a sensor reads flatline, suspect contact first, failure second.|ALL
-If the monitor shows artifacts, reduce motion and check electrode/clip placement.|ALL
-A zero reading can mean “not connected,” not “no signal.”|ALL
-Switching patients? Reset profiles and clear old trends to avoid confusion.|ALL
-Confirm time and date settings—bad timestamps ruin traceability.|ALL
-"Document configuration changes; future you will thank present you."|ALL
-Backups matter: know where the manual method is before you need it.|ALL
-"Use a consistent setup order every time; routines reduce mistakes."|ALL
-When in doubt, return to a known-safe baseline configuration.|ALL
-Take a photo of the setup (if your protocol allows) to speed up audits and troubleshooting.|ALL
-Keep spare consumables within reach—running out creates risky improvisation.|ALL
-"If a filter looks saturated, replace it; performance drops silently."|ALL
-Verify the gas/liquid source status before blaming the device.|ALL
-Check for occlusions by following the line with your hand from end to end.|ALL
-Use “two-step confirmation” for critical actions: select, then verify, then apply.|ALL
-"Avoid rapid toggling; give the system time to stabilize after changes."|ALL
-Confirm the correct patient weight/parameters—many calculations depend on them.|ALL
-"Keep connectors dry; moisture causes false signals and intermittent errors."|ALL
-"Use only approved cleaning methods; harsh chemicals degrade seals and plastics."|ALL
-If you hear an unusual sound, pause—mechanical clues often come before alarms.|ALL
-Don’t silence recurring alarms without solving the root cause—recurrence is a warning pattern.|ALL
-"Review the last event log when something feels “off”; the sequence tells the story."|ALL
-A stable baseline reading after setup is your green light to proceed.|ALL
-"Make sure the device is on a stable surface; vibration can affect precision."|ALL
-Confirm the right ports: “fits” doesn’t mean “correct.”|ALL
-Plan your disconnection steps—avoid accidental air entry or contamination.|ALL
-End each session with a quick post-check: clean, inspect, restock, and log issues.|ALL
+﻿Antes de encender el dispositivo, compruebe que no haya tubos, cables ni conectores sueltos.|ALL
+Un sensor limpio es un sensor fiable: límpielo antes de confiar en la lectura.|ALL
+Si un valor parece «demasiado perfecto», verifíquelo con una segunda medición.|ALL
+Trate las alarmas como información, no como ruido: identifique la causa antes de silenciarlas.|ALL
+Confirme que el modo del dispositivo coincide con el objetivo clínico, no solo con la última configuración utilizada.|ALL
+Compruebe primero la interfaz del paciente: el sellado de la mascarilla, los dobleces de los tubos y el ajuste resuelven muchos «problemas del dispositivo».|ALL
+Al cambiar los ajustes, modifique un parámetro cada vez para poder seguir la causa y el efecto.|ALL
+Las tendencias son mejores que las instantáneas: compare los valores a lo largo de minutos, no de segundos.|ALL
+Si la forma de onda parece incorrecta, inspeccione la línea: las oclusiones y las fugas lo distorsionan todo.|ALL
+Una rápida lista de verificación previa al uso evita una larga sesión de resolución de problemas más adelante.|ALL
+Etiquete las líneas y los puertos; la confusión es habitual en las conexiones sin etiquetar.|ALL
+Adquiera el hábito de «pausar y señalar»: señale el parámetro que está cambiando y luego confírmelo en voz alta.|ALL
+Las advertencias de batería baja son una cuenta atrás: planifique sus próximos pasos inmediatamente.|ALL
+Calibre cuando se recomiende; «lo suficientemente cerca» se desvía con el tiempo.|ALL
+Verifique que los desechables sean del tipo y tamaño correctos antes del montaje.|ALL
+Una pequeña fuga puede simular un gran problema: escuche, palpe e inspeccione las juntas.|ALL
+Evite apretar demasiado los conectores; las roscas dañadas crean fugas recurrentes.|ALL
+Si cambia un componente, vuelva a comprobar toda la ruta del sistema, desde la fuente hasta el paciente.|ALL
+Deje espacio para que circule el aire: las rejillas de ventilación bloqueadas provocan problemas de calor y un rendimiento inestable.|ALL
+Mantenga ordenados los cables: el alivio de tensión reduce las desconexiones durante el procedimiento.|ALL
+No se fije en un solo número; compruébelo con los signos clínicos del paciente.|ALL
+Establezca los límites de alarma de forma intencionada; los umbrales predeterminados no son «válidos para todos».|ALL
+Piense en prioridades: atienda primero las alarmas que ponen en peligro la vida antes que las alarmas de confort.|ALL
+Cuando un sensor indique una línea plana, sospeche primero del contacto y luego del fallo.|ALL
+Si el monitor muestra artefactos, reduzca el movimiento y compruebe la colocación de los electrodos/clips.|ALL
+Una lectura cero puede significar «no conectado», no «sin señal».|ALL
+¿Cambia de paciente? Restablezca los perfiles y borre las tendencias antiguas para evitar confusiones.|ALL
+Confirme la configuración de la hora y la fecha: las marcas de tiempo incorrectas arruinan la trazabilidad.|ALL
+Documente los cambios de configuración; su yo futuro se lo agradecerá a su yo presente.|ALL
+Las copias de seguridad son importantes: sepa dónde está el método manual antes de necesitarlo.|ALL
+Utilice siempre un orden de configuración coherente; las rutinas reducen los errores.|ALL
+En caso de duda, vuelva a una configuración básica que sepa que es segura.|ALL
+Tome una foto de la configuración (si su protocolo lo permite) para acelerar las auditorías y la resolución de problemas.|ALL
+Mantenga los consumibles de repuesto al alcance de la mano: quedarse sin ellos crea una improvisación arriesgada.|ALL
+Si un filtro parece saturado, sustitúyalo; el rendimiento disminuye silenciosamente.|ALL
+Verifique el estado de la fuente de gas/líquido antes de culpar al dispositivo.|ALL
+Compruebe si hay oclusiones siguiendo la línea con la mano de un extremo a otro.|ALL
+Utilice la «confirmación en dos pasos» para acciones críticas: seleccione, verifique y, a continuación, aplique.|ALL
+Evite los cambios rápidos; dé tiempo al sistema para que se estabilice después de los cambios.|ALL
+Confirme el peso y los parámetros correctos del paciente, ya que muchos cálculos dependen de ellos.|ALL
+Mantenga los conectores secos; la humedad provoca señales falsas y errores intermitentes.|ALL
+Utilice únicamente métodos de limpieza aprobados; los productos químicos agresivos degradan las juntas y los plásticos.|ALL
+Si oye un sonido inusual, haga una pausa: las señales mecánicas suelen preceder a las alarmas.|ALL
+No silencie las alarmas recurrentes sin resolver la causa raíz: la recurrencia es un patrón de advertencia.|ALL
+Revise el último registro de eventos cuando algo le parezca «raro»: la secuencia le dará la respuesta.|ALL
+Una lectura de referencia estable después de la configuración es la luz verde para continuar.|ALL
+Asegúrese de que el dispositivo esté sobre una superficie estable; la vibración puede afectar la precisión.|ALL
+Confirme que los puertos sean los correctos: «encajar» no significa «ser correcto».|ALL
+Planifique los pasos de desconexión: evite la entrada accidental de aire o la contaminación.|ALL
+Finalice cada sesión con una rápida verificación posterior: limpie, inspeccione, reponga y registre los problemas.|ALL
