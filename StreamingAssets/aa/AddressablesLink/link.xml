@@ -3,6 +3,7 @@
     <type fullname="AccionCajonDeslizante" preserve="all" />
     <type fullname="AccionPuertaBifold" preserve="all" />
     <type fullname="AccionPuertaBisagra" preserve="all" />
+    <type fullname="ActivadorModoHorizontalJuego" preserve="all" />
     <type fullname="AdaptadorLayoutPorAspecto" preserve="all" />
     <type fullname="ArrastreLookUI" preserve="all" />
     <type fullname="CanalAudioFuente" preserve="all" />
