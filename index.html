@@ -7,58 +7,60 @@
   <title>Camara Presurizada</title>
 
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+  }
 
-    #unity-container,
-    #unity-canvas {
-      width: 100%;
-      height: 100%;
-      background: #000;
-    }
+  #unity-container,
+  #unity-canvas {
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    background: #000;
+  }
 
-    #unity-container {
-      position: fixed;
-      inset: 0;
-      display: block;
-    }
+  #unity-container {
+    position: fixed;
+    inset: 0;
+    display: block;
+  }
 
-    #overlay-rotar {
-      position: fixed;
-      inset: 0;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      background: rgba(0, 0, 0, 0.92);
-      color: white;
-      padding: 24px;
-      box-sizing: border-box;
-      z-index: 50;
-    }
+  #overlay-rotar {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.92);
+    color: white;
+    padding: 24px;
+    box-sizing: border-box;
+    z-index: 50;
+  }
 
-    #overlay-rotar .contenido {
-      max-width: 420px;
-    }
+  #overlay-rotar .contenido {
+    max-width: 420px;
+  }
 
-    #overlay-rotar h2 {
-      margin: 0 0 10px 0;
-      font-size: 24px;
-    }
+  #overlay-rotar h2 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+  }
 
-    #overlay-rotar p {
-      margin: 0;
-      line-height: 1.4;
-      opacity: 0.9;
-    }
-  </style>
+  #overlay-rotar p {
+    margin: 0;
+    line-height: 1.4;
+    opacity: 0.9;
+  }
+</style>
 </head>
 <body>
   <div id="unity-container">
@@ -94,7 +96,11 @@
   async function intentarPantallaCompletaYHorizontal() {
     try {
       if (!document.fullscreenElement && unityCanvas.requestFullscreen) {
-        await unityCanvas.requestFullscreen();
+        try {
+          await unityCanvas.requestFullscreen({ navigationUI: "hide" });
+        } catch (_) {
+          await unityCanvas.requestFullscreen();
+        }
         console.log("Fullscreen OK");
       }
     } catch (e) {
@@ -113,6 +119,28 @@
     actualizarOverlayRotar();
   }
 
+  async function salirDePantallaCompletaYDesbloquearOrientacion() {
+    try {
+      if (screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
+        console.log("orientation.unlock OK");
+      }
+    } catch (e) {
+      console.warn("orientation.unlock falló:", e);
+    }
+
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        await document.exitFullscreen();
+        console.log("exitFullscreen OK");
+      }
+    } catch (e) {
+      console.warn("exitFullscreen falló:", e);
+    }
+
+    actualizarOverlayRotar();
+  }
+
   window.WebGL_ActivarModoJuegoHorizontal = function () {
     modoJuegoHorizontalActivo = true;
     actualizarOverlayRotar();
@@ -121,6 +149,7 @@
   window.WebGL_DesactivarModoJuegoHorizontal = function () {
     modoJuegoHorizontalActivo = false;
     actualizarOverlayRotar();
+    salirDePantallaCompletaYDesbloquearOrientacion();
   };
 
   window.WebGL_IntentarPantallaCompletaYHorizontal = function () {
