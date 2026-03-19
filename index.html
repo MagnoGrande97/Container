@@ -1,45 +1,274 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | Camara Presurizada</title>
-  </head>
-  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=1920 height=1080 tabindex="-1" style="width: 1920px; height: 1080px; background: #231F20"></canvas>
-    <script src="Build/WebGL.loader.js"></script>
-    <script>
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Camara Presurizada</title>
 
-        var canvas = document.querySelector("#unity-canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.position = "fixed";
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
 
-        document.body.style.textAlign = "left";
+    #app {
+      position: fixed;
+      inset: 0;
+      background: #000;
+    }
 
+    #unity-container,
+    #unity-canvas {
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+
+    #unity-container {
+      display: none;
+      position: fixed;
+      inset: 0;
+    }
+
+    #pantalla-inicio {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      padding: 24px;
+      box-sizing: border-box;
+      color: white;
+      text-align: center;
+      background:
+        radial-gradient(circle at center, #1a1a1a 0%, #000 70%);
+    }
+
+    #pantalla-inicio h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    #pantalla-inicio p {
+      margin: 0;
+      max-width: 420px;
+      line-height: 1.4;
+      opacity: 0.9;
+    }
+
+    #boton-comenzar {
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 22px;
+      font-size: 18px;
+      cursor: pointer;
+      background: white;
+      color: black;
+      font-weight: bold;
+    }
+
+    #estado {
+      font-size: 14px;
+      opacity: 0.8;
+      min-height: 20px;
+    }
+
+    #overlay-rotar {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.92);
+      color: white;
+      padding: 24px;
+      box-sizing: border-box;
+      z-index: 50;
+    }
+
+    #overlay-rotar .contenido {
+      max-width: 420px;
+    }
+
+    #overlay-rotar h2 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+    }
+
+    #overlay-rotar p {
+      margin: 0;
+      line-height: 1.4;
+      opacity: 0.9;
+    }
+
+    #mensaje-carga {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 14px;
+      opacity: 0.85;
+      display: none;
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="pantalla-inicio">
+      <h1>Camara Presurizada</h1>
+      <p>
+        Toca comenzar. Intentaremos abrir el juego en pantalla completa y en horizontal.
+      </p>
+      <button id="boton-comenzar" type="button">Comenzar</button>
+      <div id="estado"></div>
+    </div>
+
+    <div id="unity-container">
+      <canvas id="unity-canvas" tabindex="-1"></canvas>
+    </div>
+
+    <div id="overlay-rotar">
+      <div class="contenido">
+        <h2>Gira el teléfono</h2>
+        <p>
+          Para jugar mejor, coloca el dispositivo en horizontal.
+          Si no gira automáticamente, desactiva el bloqueo de rotación del teléfono.
+        </p>
+      </div>
+    </div>
+
+    <div id="mensaje-carga">Cargando juego...</div>
+  </div>
+
+  <script>
+    const unityContainer = document.getElementById("unity-container");
+    const unityCanvas = document.getElementById("unity-canvas");
+    const pantallaInicio = document.getElementById("pantalla-inicio");
+    const botonComenzar = document.getElementById("boton-comenzar");
+    const estado = document.getElementById("estado");
+    const overlayRotar = document.getElementById("overlay-rotar");
+    const mensajeCarga = document.getElementById("mensaje-carga");
+
+    let unityInstance = null;
+    let unityCargado = false;
+
+    function logEstado(texto) {
+      estado.textContent = texto || "";
+      console.log(texto || "");
+    }
+
+    function estaHorizontal() {
+      return window.innerWidth > window.innerHeight;
+    }
+
+    function actualizarOverlayRotar() {
+      if (!unityCargado) {
+        overlayRotar.style.display = "none";
+        return;
       }
 
-      createUnityInstance(document.querySelector("#unity-canvas"), {
-        arguments: [],
-        dataUrl: "Build/WebGL.data.unityweb",
-        frameworkUrl: "Build/WebGL.framework.js.unityweb",
-        codeUrl: "Build/WebGL.wasm.unityweb",
+      overlayRotar.style.display = estaHorizontal() ? "none" : "flex";
+    }
+
+    async function intentarFullscreenYHorizontal() {
+      const objetivo = unityCanvas;
+
+      try {
+        if (!document.fullscreenElement && objetivo.requestFullscreen) {
+          await objetivo.requestFullscreen();
+          logEstado("Pantalla completa activada.");
+        } else if (!objetivo.requestFullscreen) {
+          logEstado("Este navegador no soporta requestFullscreen en este contexto.");
+        }
+      } catch (e) {
+        logEstado("No se pudo activar pantalla completa automáticamente.");
+        console.warn("requestFullscreen falló:", e);
+      }
+
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          await screen.orientation.lock("landscape");
+          logEstado("Orientación horizontal solicitada.");
+        } else {
+          logEstado("Este navegador no soporta bloqueo de orientación.");
+        }
+      } catch (e) {
+        logEstado("No se pudo bloquear la orientación automáticamente.");
+        console.warn("orientation.lock falló:", e);
+      }
+    }
+
+    function crearConfigUnity() {
+      const buildUrl = "Build";
+      return {
+        dataUrl: buildUrl + "/WebGL.data.unityweb",
+        frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb",
+        codeUrl: buildUrl + "/WebGL.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DraegerPeruSAC",
         productName: "Camara Presurizada",
         productVersion: "0.1.0",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-      }).then((unityInstance) => {
-      }).catch((message) => {
-        alert(message);
+      };
+    }
+
+    function cargarUnity() {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "Build/WebGL.loader.js";
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("No se pudo cargar el loader de Unity."));
+        document.body.appendChild(script);
       });
-    </script>
-  </body>
+    }
+
+    async function iniciarJuego() {
+      botonComenzar.disabled = true;
+      mensajeCarga.style.display = "block";
+      logEstado("Preparando juego...");
+
+      await intentarFullscreenYHorizontal();
+
+      try {
+        await cargarUnity();
+
+        const config = crearConfigUnity();
+
+        unityContainer.style.display = "block";
+        pantallaInicio.style.display = "none";
+
+        unityInstance = await createUnityInstance(unityCanvas, config, (progress) => {
+          const porcentaje = Math.round(progress * 100);
+          mensajeCarga.textContent = "Cargando juego... " + porcentaje + "%";
+        });
+
+        unityCargado = true;
+        mensajeCarga.style.display = "none";
+        actualizarOverlayRotar();
+        logEstado("");
+      } catch (e) {
+        mensajeCarga.style.display = "none";
+        botonComenzar.disabled = false;
+        pantallaInicio.style.display = "flex";
+        logEstado("No se pudo iniciar el juego.");
+        console.error(e);
+      }
+    }
+
+    botonComenzar.addEventListener("click", iniciarJuego);
+    window.addEventListener("resize", actualizarOverlayRotar);
+    window.addEventListener("orientationchange", actualizarOverlayRotar);
+    document.addEventListener("fullscreenchange", actualizarOverlayRotar);
+  </script>
+</body>
 </html>
