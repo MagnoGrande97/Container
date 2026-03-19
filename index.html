@@ -65,105 +65,106 @@
     <canvas id="unity-canvas" tabindex="-1"></canvas>
   </div>
 
-  <div id="overlay-rotar">
-    <div class="contenido">
-      <h2>Gira el teléfono</h2>
-      <p>
-        Para jugar mejor, coloca el dispositivo en horizontal.
-        Si no gira automáticamente, desactiva el bloqueo de rotación del teléfono.
-      </p>
-    </div>
+<div id="overlay-rotar" style="display:none;">
+  <div class="contenido">
+    <h2>Gira el teléfono</h2>
+    <p>
+      Para jugar mejor, coloca el dispositivo en horizontal.
+      Si no gira automáticamente, desactiva el bloqueo de rotación del teléfono.
+    </p>
   </div>
+</div>
 
   <script>
-    const unityCanvas = document.getElementById("unity-canvas");
-    const overlayRotar = document.getElementById("overlay-rotar");
+  const unityCanvas = document.getElementById("unity-canvas");
+  const overlayRotar = document.getElementById("overlay-rotar");
 
-    let unityInstance = null;
-    let modoJuegoHorizontalActivo = false;
+  let unityInstance = null;
+  let modoJuegoHorizontalActivo = false;
 
-    function estaHorizontal() {
-      return window.innerWidth > window.innerHeight;
+  function estaHorizontal() {
+    return window.innerWidth > window.innerHeight;
+  }
+
+  function actualizarOverlayRotar() {
+    overlayRotar.style.display =
+      (modoJuegoHorizontalActivo && !estaHorizontal()) ? "flex" : "none";
+  }
+
+  async function intentarPantallaCompletaYHorizontal() {
+    try {
+      if (!document.fullscreenElement && unityCanvas.requestFullscreen) {
+        await unityCanvas.requestFullscreen();
+        console.log("Fullscreen OK");
+      }
+    } catch (e) {
+      console.warn("requestFullscreen falló:", e);
     }
 
-    function actualizarOverlayRotar() {
-      overlayRotar.style.display =
-        (modoJuegoHorizontalActivo && !estaHorizontal()) ? "flex" : "none";
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        await screen.orientation.lock("landscape");
+        console.log("orientation.lock OK");
+      }
+    } catch (e) {
+      console.warn("orientation.lock falló:", e);
     }
 
-    async function intentarFullscreenYHorizontal() {
-      try {
-        if (!document.fullscreenElement && unityCanvas.requestFullscreen) {
-          await unityCanvas.requestFullscreen();
-          console.log("Fullscreen OK");
-        }
-      } catch (e) {
-        console.warn("requestFullscreen falló:", e);
-      }
+    actualizarOverlayRotar();
+  }
 
-      try {
-        if (screen.orientation && screen.orientation.lock) {
-          await screen.orientation.lock("landscape");
-          console.log("orientation.lock OK");
-        }
-      } catch (e) {
-        console.warn("orientation.lock falló:", e);
-      }
-    }
+  window.WebGL_ActivarModoJuegoHorizontal = function () {
+    modoJuegoHorizontalActivo = true;
+    actualizarOverlayRotar();
+  };
 
-    window.WebGL_ActivarModoJuegoHorizontal = async function (intentarFullscreen) {
-      modoJuegoHorizontalActivo = true;
+  window.WebGL_DesactivarModoJuegoHorizontal = function () {
+    modoJuegoHorizontalActivo = false;
+    actualizarOverlayRotar();
+  };
 
-      if (intentarFullscreen) {
-        await intentarFullscreenYHorizontal();
-      }
+  window.WebGL_IntentarPantallaCompletaYHorizontal = function () {
+    return intentarPantallaCompletaYHorizontal();
+  };
 
-      actualizarOverlayRotar();
+  function crearConfigUnity() {
+    const buildUrl = "Build";
+    return {
+      dataUrl: buildUrl + "/WebGL.data.unityweb",
+      frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb",
+      codeUrl: buildUrl + "/WebGL.wasm.unityweb",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DraegerPeruSAC",
+      productName: "Camara Presurizada",
+      productVersion: "0.1.0"
     };
+  }
 
-    window.WebGL_DesactivarModoJuegoHorizontal = function () {
-      modoJuegoHorizontalActivo = false;
+  function cargarUnity() {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "Build/WebGL.loader.js";
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("No se pudo cargar el loader de Unity."));
+      document.body.appendChild(script);
+    });
+  }
+
+  async function iniciarUnity() {
+    try {
+      await cargarUnity();
+      unityInstance = await createUnityInstance(unityCanvas, crearConfigUnity(), function () {});
       actualizarOverlayRotar();
-    };
-
-    function crearConfigUnity() {
-      const buildUrl = "Build";
-      return {
-        dataUrl: buildUrl + "/WebGL.data.unityweb",
-        frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb",
-        codeUrl: buildUrl + "/WebGL.wasm.unityweb",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DraegerPeruSAC",
-        productName: "Camara Presurizada",
-        productVersion: "0.1.0"
-      };
+    } catch (e) {
+      console.error("No se pudo iniciar Unity:", e);
     }
+  }
 
-    function cargarUnity() {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = "Build/WebGL.loader.js";
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error("No se pudo cargar el loader de Unity."));
-        document.body.appendChild(script);
-      });
-    }
+  window.addEventListener("resize", actualizarOverlayRotar);
+  window.addEventListener("orientationchange", actualizarOverlayRotar);
+  document.addEventListener("fullscreenchange", actualizarOverlayRotar);
 
-    async function iniciarUnity() {
-      try {
-        await cargarUnity();
-        unityInstance = await createUnityInstance(unityCanvas, crearConfigUnity(), function () {});
-        actualizarOverlayRotar();
-      } catch (e) {
-        console.error("No se pudo iniciar Unity:", e);
-      }
-    }
-
-    window.addEventListener("resize", actualizarOverlayRotar);
-    window.addEventListener("orientationchange", actualizarOverlayRotar);
-    document.addEventListener("fullscreenchange", actualizarOverlayRotar);
-
-    iniciarUnity();
-  </script>
+  iniciarUnity();
+</script>
 </body>
 </html>
