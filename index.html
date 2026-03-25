@@ -10,7 +10,8 @@
     <style>
         :root {
             --bg: #05070d;
-            --panel: rgba(5, 7, 13, 0.88);
+            --panel: rgba(5, 7, 13, 0.90);
+            --panel-azul: rgba(0, 39, 102, 0.92);
             --text: #ffffff;
             --muted: rgba(255,255,255,0.82);
             --brand: #0091F7;
@@ -28,7 +29,7 @@
             overflow: hidden;
             overscroll-behavior: none;
             font-family: Arial, sans-serif;
-            touch-action: none;
+            touch-action: manipulation;
         }
 
         body {
@@ -54,9 +55,9 @@
             outline: none;
         }
 
-        #overlay-rotar,
         #overlay-carga,
-        #overlay-transicion-juego {
+        #overlay-entrada-juego,
+        #overlay-rotar {
             position: fixed;
             inset: 0;
             display: none;
@@ -100,7 +101,6 @@
                 margin: 0 0 8px 0;
                 font-size: 24px;
                 font-weight: 700;
-                letter-spacing: 0.3px;
             }
 
             #overlay-carga .texto {
@@ -130,7 +130,6 @@
                 margin-top: 10px;
                 font-size: 13px;
                 color: rgba(255,255,255,0.72);
-                letter-spacing: 0.3px;
             }
 
             #overlay-carga .subtexto {
@@ -139,41 +138,65 @@
                 color: rgba(255,255,255,0.54);
             }
 
-        #overlay-transicion-juego {
+        #overlay-entrada-juego {
             z-index: 1001;
-            background: rgba(0, 0, 0, 0.96);
+            background: rgba(0, 0, 0, 0.94);
             color: white;
         }
 
-            #overlay-transicion-juego.visible {
+            #overlay-entrada-juego.visible {
                 display: flex;
             }
 
-            #overlay-transicion-juego .panel {
-                width: min(420px, calc(100vw - 48px));
-                background: rgba(0, 39, 102, 0.88);
+            #overlay-entrada-juego .panel {
+                width: min(440px, calc(100vw - 48px));
+                background: var(--panel-azul);
                 border: 1px solid rgba(255,255,255,0.08);
                 border-radius: 18px;
                 padding: 24px 20px;
-                box-shadow: 0 18px 48px rgba(0,0,0,0.35);
+                box-shadow: var(--shadow);
             }
 
-            #overlay-transicion-juego .titulo {
-                font-size: 24px;
+            #overlay-entrada-juego .titulo {
+                font-size: 22px;
                 font-weight: 700;
-                margin-bottom: 8px;
+                margin-bottom: 10px;
             }
 
-            #overlay-transicion-juego .texto {
-                font-size: 14px;
-                opacity: 0.88;
+            #overlay-entrada-juego .texto {
+                font-size: 15px;
+                opacity: 0.90;
+                line-height: 1.45;
+                margin-bottom: 18px;
+            }
+
+        #boton-continuar-juego {
+            appearance: none;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(90deg, var(--brand-dark), var(--brand));
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            padding: 14px 22px;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(0,145,247,0.26);
+        }
+
+            #boton-continuar-juego:disabled {
+                opacity: 0.70;
+                cursor: default;
             }
 
         #overlay-rotar {
-            z-index: 1003;
+            z-index: 1000;
             background: rgba(0, 0, 0, 0.92);
             color: var(--text);
         }
+
+            #overlay-rotar.visible {
+                display: flex;
+            }
 
             #overlay-rotar .contenido {
                 max-width: 420px;
@@ -213,10 +236,14 @@
         </div>
     </div>
 
-    <div id="overlay-transicion-juego">
+    <div id="overlay-entrada-juego">
         <div class="panel">
-            <div class="titulo" id="overlay-transicion-titulo">Entrando al simulador</div>
-            <div class="texto" id="overlay-transicion-texto">Preparando pantalla...</div>
+            <div class="titulo" id="entrada-juego-titulo">Entrar al simulador</div>
+            <div class="texto" id="entrada-juego-texto">
+                Toca CONTINUAR para pasar al modo horizontal.
+                Si tu navegador no gira solo, luego gira el teléfono manualmente.
+            </div>
+            <button id="boton-continuar-juego" type="button">CONTINUAR</button>
         </div>
     </div>
 
@@ -225,7 +252,7 @@
             <h2>Gira el teléfono</h2>
             <p>
                 Para jugar mejor, coloca el dispositivo en horizontal.
-                Si no gira automáticamente, desactiva el bloqueo de rotación del teléfono.
+                Si no gira automáticamente, gíralo manualmente.
             </p>
         </div>
     </div>
@@ -240,15 +267,17 @@
         const cargaBarra = document.getElementById("carga-barra");
         const cargaPorcentaje = document.getElementById("carga-porcentaje");
 
-        const overlayTransicionJuego = document.getElementById("overlay-transicion-juego");
-        const overlayTransicionTitulo = document.getElementById("overlay-transicion-titulo");
-        const overlayTransicionTexto = document.getElementById("overlay-transicion-texto");
+        const overlayEntradaJuego = document.getElementById("overlay-entrada-juego");
+        const entradaJuegoTitulo = document.getElementById("entrada-juego-titulo");
+        const entradaJuegoTexto = document.getElementById("entrada-juego-texto");
+        const botonContinuarJuego = document.getElementById("boton-continuar-juego");
 
         const overlayRotar = document.getElementById("overlay-rotar");
 
         let unityInstance = null;
         let modoJuegoHorizontalActivo = false;
-        let transicionJuegoActiva = false;
+        let entradaJuegoConfirmada = false;
+        let entradaJuegoEnProceso = false;
 
         function obtenerViewportActual() {
             if (window.visualViewport) {
@@ -269,6 +298,10 @@
             return vp.width > vp.height;
         }
 
+        function estaEnFullscreen() {
+            return !!(document.fullscreenElement || document.webkitFullscreenElement);
+        }
+
         function aplicarTamanoViewport() {
             const vp = obtenerViewportActual();
             const w = Math.max(1, vp.width);
@@ -285,11 +318,6 @@
 
             unityCanvas.style.width = w + "px";
             unityCanvas.style.height = h + "px";
-        }
-
-        function actualizarOverlayRotar() {
-            overlayRotar.style.display =
-                (modoJuegoHorizontalActivo && !estaHorizontal()) ? "flex" : "none";
         }
 
         function mostrarOverlayCarga(titulo, texto, progreso) {
@@ -309,14 +337,25 @@
             overlayCarga.classList.remove("visible");
         }
 
-        function mostrarOverlayTransicionJuego(titulo, texto) {
-            if (typeof titulo === "string") overlayTransicionTitulo.textContent = titulo;
-            if (typeof texto === "string") overlayTransicionTexto.textContent = texto;
-            overlayTransicionJuego.classList.add("visible");
+        function mostrarOverlayEntradaJuego(titulo, texto, textoBoton) {
+            if (typeof titulo === "string") entradaJuegoTitulo.textContent = titulo;
+            if (typeof texto === "string") entradaJuegoTexto.textContent = texto;
+            if (typeof textoBoton === "string") botonContinuarJuego.textContent = textoBoton;
+
+            botonContinuarJuego.disabled = false;
+            overlayEntradaJuego.classList.add("visible");
         }
 
-        function ocultarOverlayTransicionJuego() {
-            overlayTransicionJuego.classList.remove("visible");
+        function ocultarOverlayEntradaJuego() {
+            overlayEntradaJuego.classList.remove("visible");
+        }
+
+        function mostrarOverlayRotar() {
+            overlayRotar.classList.add("visible");
+        }
+
+        function ocultarOverlayRotar() {
+            overlayRotar.classList.remove("visible");
         }
 
         async function esperarFrames(cantidad) {
@@ -339,12 +378,51 @@
             window.dispatchEvent(new Event("resize"));
         }
 
-        async function intentarPantallaCompletaYHorizontal() {
-            transicionJuegoActiva = true;
-            mostrarOverlayTransicionJuego("Entrando al simulador", "Preparando pantalla...");
+        function actualizarOverlaysModoJuego() {
+            aplicarTamanoViewport();
+
+            if (!modoJuegoHorizontalActivo) {
+                ocultarOverlayEntradaJuego();
+                ocultarOverlayRotar();
+                return;
+            }
+
+            if (entradaJuegoConfirmada) {
+                if (estaHorizontal()) {
+                    ocultarOverlayRotar();
+                } else {
+                    mostrarOverlayRotar();
+                }
+                return;
+            }
+
+            ocultarOverlayRotar();
+
+            if (!estaHorizontal() && !entradaJuegoEnProceso) {
+                mostrarOverlayEntradaJuego(
+                    "Entrar al simulador",
+                    "Toca CONTINUAR para pasar al modo horizontal. Si no gira automáticamente, luego gira el teléfono manualmente.",
+                    "CONTINUAR"
+                );
+            } else if (estaHorizontal()) {
+                entradaJuegoConfirmada = true;
+                ocultarOverlayEntradaJuego();
+                ocultarOverlayRotar();
+            }
+        }
+
+        async function intentarEntrarEnJuegoDesdeGesto() {
+            if (entradaJuegoEnProceso)
+                return;
+
+            entradaJuegoEnProceso = true;
+            botonContinuarJuego.disabled = true;
+            entradaJuegoTitulo.textContent = "Entrando al simulador";
+            entradaJuegoTexto.textContent = "Preparando pantalla...";
+            botonContinuarJuego.textContent = "ESPERE...";
 
             try {
-                if (!document.fullscreenElement && unityCanvas.requestFullscreen) {
+                if (!estaEnFullscreen() && unityCanvas.requestFullscreen) {
                     try {
                         await unityCanvas.requestFullscreen({ navigationUI: "hide" });
                     } catch (_) {
@@ -364,14 +442,21 @@
             }
 
             await estabilizarViewport();
-            actualizarOverlayRotar();
 
             if (estaHorizontal()) {
-                ocultarOverlayTransicionJuego();
-                transicionJuegoActiva = false;
+                entradaJuegoConfirmada = true;
+                ocultarOverlayEntradaJuego();
+                ocultarOverlayRotar();
             } else {
-                mostrarOverlayTransicionJuego("Esperando orientación", "Gira el teléfono para continuar.");
+                mostrarOverlayEntradaJuego(
+                    "Gira el teléfono",
+                    "Tu navegador no cambió a horizontal automáticamente. Gira el teléfono manualmente y luego toca REINTENTAR.",
+                    "REINTENTAR"
+                );
             }
+
+            entradaJuegoEnProceso = false;
+            actualizarOverlaysModoJuego();
         }
 
         async function salirDePantallaCompletaYDesbloquearOrientacion() {
@@ -384,7 +469,7 @@
             }
 
             try {
-                if (document.fullscreenElement && document.exitFullscreen) {
+                if (estaEnFullscreen() && document.exitFullscreen) {
                     await document.exitFullscreen();
                 }
             } catch (e) {
@@ -392,25 +477,35 @@
             }
 
             await estabilizarViewport();
-            actualizarOverlayRotar();
-            ocultarOverlayTransicionJuego();
-            transicionJuegoActiva = false;
         }
 
         window.WebGL_ActivarModoJuegoHorizontal = function () {
             modoJuegoHorizontalActivo = true;
-            actualizarOverlayRotar();
+            entradaJuegoConfirmada = false;
+            entradaJuegoEnProceso = false;
+            actualizarOverlaysModoJuego();
         };
 
-        window.WebGL_DesactivarModoJuegoHorizontal = function () {
+        window.WebGL_DesactivarModoJuegoHorizontal = async function () {
             modoJuegoHorizontalActivo = false;
-            actualizarOverlayRotar();
-            salirDePantallaCompletaYDesbloquearOrientacion();
+            entradaJuegoConfirmada = false;
+            entradaJuegoEnProceso = false;
+
+            ocultarOverlayEntradaJuego();
+            ocultarOverlayRotar();
+
+            await salirDePantallaCompletaYDesbloquearOrientacion();
+            actualizarOverlaysModoJuego();
         };
 
+        // Se mantiene por compatibilidad, pero ya NO intenta fullscreen automáticamente.
+        // Solo muestra el prompt correcto.
         window.WebGL_IntentarPantallaCompletaYHorizontal = function () {
-            return intentarPantallaCompletaYHorizontal();
+            modoJuegoHorizontalActivo = true;
+            actualizarOverlaysModoJuego();
         };
+
+        botonContinuarJuego.addEventListener("click", intentarEntrarEnJuegoDesdeGesto);
 
         function crearConfigUnity() {
             const buildUrl = "Build";
@@ -464,8 +559,8 @@
                 );
 
                 await estabilizarViewport();
-                actualizarOverlayRotar();
                 ocultarOverlayCarga();
+                actualizarOverlaysModoJuego();
             } catch (e) {
                 console.error("No se pudo iniciar Unity:", e);
                 mostrarOverlayCarga("Error de inicio", "No se pudo cargar la experiencia.", 1);
@@ -474,11 +569,7 @@
 
         function onCambioViewport() {
             aplicarTamanoViewport();
-            actualizarOverlayRotar();
-
-            if (transicionJuegoActiva) {
-                mostrarOverlayTransicionJuego("Entrando al simulador", "Ajustando pantalla...");
-            }
+            actualizarOverlaysModoJuego();
         }
 
         window.addEventListener("resize", onCambioViewport);
