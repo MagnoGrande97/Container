@@ -158,6 +158,44 @@
                 font-size: 12px;
                 color: rgba(255,255,255,0.54);
             }
+
+        #overlay-transicion-juego {
+            position: fixed;
+            inset: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.96);
+            color: white;
+            padding: 24px;
+            box-sizing: border-box;
+            z-index: 60;
+        }
+
+            #overlay-transicion-juego.visible {
+                display: flex;
+            }
+
+            #overlay-transicion-juego .panel {
+                width: min(420px, calc(100vw - 48px));
+                background: rgba(0, 39, 102, 0.88);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 18px;
+                padding: 24px 20px;
+                box-shadow: 0 18px 48px rgba(0,0,0,0.35);
+            }
+
+            #overlay-transicion-juego .titulo {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+
+            #overlay-transicion-juego .texto {
+                font-size: 14px;
+                opacity: 0.88;
+            }
     </style>
 </head>
 <body>
@@ -172,6 +210,13 @@
                 Para jugar mejor, coloca el dispositivo en horizontal.
                 Si no gira automáticamente, desactiva el bloqueo de rotación del teléfono.
             </p>
+        </div>
+    </div>
+
+    <div id="overlay-transicion-juego">
+        <div class="panel">
+            <div class="titulo" id="overlay-transicion-titulo">Entrando al simulador</div>
+            <div class="texto" id="overlay-transicion-texto">Preparando pantalla...</div>
         </div>
     </div>
 
@@ -193,266 +238,219 @@
     </div>
 
     <script>
-    const unityContainer = document.getElementById("unity-container");
-    const unityCanvas = document.getElementById("unity-canvas");
-    const overlayRotar = document.getElementById("overlay-rotar");
-    const overlayCarga = document.getElementById("overlay-carga");
-    const cargaTitulo = document.getElementById("carga-titulo");
-    const cargaTexto = document.getElementById("carga-texto");
-    const cargaBarra = document.getElementById("carga-barra");
-    const cargaPorcentaje = document.getElementById("carga-porcentaje");
+  const unityContainer = document.getElementById("unity-container");
+  const unityCanvas = document.getElementById("unity-canvas");
+  const overlayRotar = document.getElementById("overlay-rotar");
+  const overlayTransicionJuego = document.getElementById("overlay-transicion-juego");
+  const overlayTransicionTitulo = document.getElementById("overlay-transicion-titulo");
+  const overlayTransicionTexto = document.getElementById("overlay-transicion-texto");
 
-    let unityInstance = null;
-    let modoJuegoHorizontalActivo = false;
-    let transicionModoJuegoActiva = false;
-    let ocultarCargaPendiente = null;
+  let unityInstance = null;
+  let modoJuegoHorizontalActivo = false;
 
-    function obtenerViewportActual() {
-      if (window.visualViewport) {
-        return {
-          width: Math.round(window.visualViewport.width),
-          height: Math.round(window.visualViewport.height)
-        };
-      }
-
-      return {
-        width: Math.round(window.innerWidth),
-        height: Math.round(window.innerHeight)
-      };
-    }
-
-    function estaHorizontal() {
-      const vp = obtenerViewportActual();
-      return vp.width > vp.height;
-    }
-
-    function aplicarTamanoViewport() {
-      const vp = obtenerViewportActual();
-      const w = Math.max(1, vp.width);
-      const h = Math.max(1, vp.height);
-
-      document.documentElement.style.width = w + "px";
-      document.documentElement.style.height = h + "px";
-
-      document.body.style.width = w + "px";
-      document.body.style.height = h + "px";
-
-      unityContainer.style.width = w + "px";
-      unityContainer.style.height = h + "px";
-
-      unityCanvas.style.width = w + "px";
-      unityCanvas.style.height = h + "px";
-    }
-
-    function notificarResizeUnity() {
-      aplicarTamanoViewport();
-      window.dispatchEvent(new Event("resize"));
-    }
-
-    function actualizarOverlayRotar() {
-      overlayRotar.style.display =
-        (modoJuegoHorizontalActivo && !estaHorizontal()) ? "flex" : "none";
-    }
-
-    function mostrarOverlayCarga(titulo, texto, progreso) {
-      if (typeof titulo === "string") cargaTitulo.textContent = titulo;
-      if (typeof texto === "string") cargaTexto.textContent = texto;
-      if (typeof progreso === "number") setProgresoCarga(progreso);
-
-      overlayCarga.classList.add("visible");
-    }
-
-    function ocultarOverlayCarga() {
-      overlayCarga.classList.remove("visible");
-    }
-
-    function setProgresoCarga(valor) {
-      const v = Math.max(0, Math.min(1, valor));
-      cargaBarra.style.width = (v * 100).toFixed(0) + "%";
-      cargaPorcentaje.textContent = (v * 100).toFixed(0) + "%";
-    }
-
-    function limpiarOcultadoPendiente() {
-      if (ocultarCargaPendiente != null) {
-        clearTimeout(ocultarCargaPendiente);
-        ocultarCargaPendiente = null;
-      }
-    }
-
-    async function esperarFrames(cantidad) {
-      for (let i = 0; i < cantidad; i++) {
-        await new Promise(resolve => requestAnimationFrame(resolve));
-      }
-    }
-
-    async function estabilizarViewport() {
-      aplicarTamanoViewport();
-      await esperarFrames(2);
-      aplicarTamanoViewport();
-
-      await new Promise(resolve => setTimeout(resolve, 80));
-      aplicarTamanoViewport();
-
-      await new Promise(resolve => setTimeout(resolve, 180));
-      aplicarTamanoViewport();
-
-      notificarResizeUnity();
-    }
-
-    async function intentarPantallaCompletaYHorizontal() {
-      transicionModoJuegoActiva = true;
-      limpiarOcultadoPendiente();
-      mostrarOverlayCarga("Preparando experiencia", "Cambiando a modo horizontal...", 1);
-
-      try {
-        if (!document.fullscreenElement && unityCanvas.requestFullscreen) {
-          try {
-            await unityCanvas.requestFullscreen({ navigationUI: "hide" });
-          } catch (_) {
-            await unityCanvas.requestFullscreen();
-          }
-        }
-      } catch (e) {
-        console.warn("requestFullscreen falló:", e);
-      }
-
-      try {
-        if (screen.orientation && screen.orientation.lock) {
-          await screen.orientation.lock("landscape");
-        }
-      } catch (e) {
-        console.warn("orientation.lock falló:", e);
-      }
-
-      await estabilizarViewport();
-      actualizarOverlayRotar();
-
-      ocultarCargaPendiente = setTimeout(() => {
-        transicionModoJuegoActiva = false;
-        if (estaHorizontal()) {
-          ocultarOverlayCarga();
-        } else {
-          mostrarOverlayCarga("Esperando orientación", "Gira el teléfono para continuar.", 1);
-        }
-      }, 220);
-    }
-
-    async function salirDePantallaCompletaYDesbloquearOrientacion() {
-      try {
-        if (screen.orientation && screen.orientation.unlock) {
-          screen.orientation.unlock();
-        }
-      } catch (e) {
-        console.warn("orientation.unlock falló:", e);
-      }
-
-      try {
-        if (document.fullscreenElement && document.exitFullscreen) {
-          await document.exitFullscreen();
-        }
-      } catch (e) {
-        console.warn("exitFullscreen falló:", e);
-      }
-
-      await estabilizarViewport();
-      actualizarOverlayRotar();
-    }
-
-    window.WebGL_ActivarModoJuegoHorizontal = function () {
-      modoJuegoHorizontalActivo = true;
-      actualizarOverlayRotar();
-    };
-
-    window.WebGL_DesactivarModoJuegoHorizontal = function () {
-      modoJuegoHorizontalActivo = false;
-      actualizarOverlayRotar();
-      salirDePantallaCompletaYDesbloquearOrientacion();
-    };
-
-    window.WebGL_IntentarPantallaCompletaYHorizontal = function () {
-      return intentarPantallaCompletaYHorizontal();
-    };
-
-    function crearConfigUnity() {
-      const buildUrl = "Build";
-      return {
-        dataUrl: buildUrl + "/WebGL.data.unityweb",
-        frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb",
-        codeUrl: buildUrl + "/WebGL.wasm.unityweb",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DraegerPeruSAC",
-        productName: "Camara Presurizada",
-        productVersion: "0.1.0",
-        matchWebGLToCanvasSize: true
-      };
-    }
-
-    function cargarUnity() {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = "Build/WebGL.loader.js";
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error("No se pudo cargar el loader de Unity."));
-        document.body.appendChild(script);
-      });
-    }
-
-    async function iniciarUnity() {
-      try {
-        aplicarTamanoViewport();
-        mostrarOverlayCarga("Iniciando experiencia", "Cargando motor...", 0);
-
-        await cargarUnity();
-
-        unityInstance = await createUnityInstance(
-          unityCanvas,
-          crearConfigUnity(),
-          function (progress) {
-            const p = Math.max(0, Math.min(1, progress));
-            setProgresoCarga(p);
-
-            if (p < 0.25) {
-              cargaTexto.textContent = "Cargando motor...";
-            } else if (p < 0.60) {
-              cargaTexto.textContent = "Cargando contenido...";
-            } else if (p < 0.95) {
-              cargaTexto.textContent = "Preparando escena...";
-            } else {
-              cargaTexto.textContent = "Inicializando...";
-            }
-          }
-        );
-
-        await estabilizarViewport();
-        setProgresoCarga(1);
-        actualizarOverlayRotar();
-
-        if (!transicionModoJuegoActiva)
-          ocultarOverlayCarga();
-      } catch (e) {
-        console.error("No se pudo iniciar Unity:", e);
-        mostrarOverlayCarga("Error de inicio", "No se pudo cargar la experiencia.", 1);
-      }
-    }
-
-    function onCambioViewport() {
-      aplicarTamanoViewport();
-      actualizarOverlayRotar();
-
-      if (transicionModoJuegoActiva) {
-        mostrarOverlayCarga("Preparando experiencia", "Ajustando pantalla...", 1);
-      }
-    }
-
-    window.addEventListener("resize", onCambioViewport);
-    window.addEventListener("orientationchange", onCambioViewport);
-    document.addEventListener("fullscreenchange", onCambioViewport);
-
+  function obtenerViewportActual() {
     if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", onCambioViewport);
+      return {
+        width: Math.round(window.visualViewport.width),
+        height: Math.round(window.visualViewport.height)
+      };
     }
 
-    iniciarUnity();
+    return {
+      width: Math.round(window.innerWidth),
+      height: Math.round(window.innerHeight)
+    };
+  }
+
+  function estaHorizontal() {
+    const vp = obtenerViewportActual();
+    return vp.width > vp.height;
+  }
+
+  function aplicarTamanoViewport() {
+    const vp = obtenerViewportActual();
+    const w = Math.max(1, vp.width);
+    const h = Math.max(1, vp.height);
+
+    document.documentElement.style.width = w + "px";
+    document.documentElement.style.height = h + "px";
+
+    document.body.style.width = w + "px";
+    document.body.style.height = h + "px";
+
+    unityContainer.style.width = w + "px";
+    unityContainer.style.height = h + "px";
+
+    unityCanvas.style.width = w + "px";
+    unityCanvas.style.height = h + "px";
+  }
+
+  function actualizarOverlayRotar() {
+    overlayRotar.style.display =
+      (modoJuegoHorizontalActivo && !estaHorizontal()) ? "flex" : "none";
+  }
+
+  function mostrarOverlayTransicionJuego(titulo, texto) {
+    if (typeof titulo === "string") overlayTransicionTitulo.textContent = titulo;
+    if (typeof texto === "string") overlayTransicionTexto.textContent = texto;
+    overlayTransicionJuego.classList.add("visible");
+  }
+
+  function ocultarOverlayTransicionJuego() {
+    overlayTransicionJuego.classList.remove("visible");
+  }
+
+  async function esperarFrames(cantidad) {
+    for (let i = 0; i < cantidad; i++) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+  }
+
+  async function estabilizarViewport() {
+    aplicarTamanoViewport();
+    await esperarFrames(2);
+    aplicarTamanoViewport();
+
+    await new Promise(resolve => setTimeout(resolve, 90));
+    aplicarTamanoViewport();
+
+    await new Promise(resolve => setTimeout(resolve, 180));
+    aplicarTamanoViewport();
+
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  async function intentarPantallaCompletaYHorizontal() {
+    mostrarOverlayTransicionJuego("Entrando al simulador", "Preparando pantalla...");
+
+    try {
+      if (!document.fullscreenElement && unityCanvas.requestFullscreen) {
+        try {
+          await unityCanvas.requestFullscreen({ navigationUI: "hide" });
+        } catch (_) {
+          await unityCanvas.requestFullscreen();
+        }
+        console.log("Fullscreen OK");
+      }
+    } catch (e) {
+      console.warn("requestFullscreen falló:", e);
+    }
+
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        await screen.orientation.lock("landscape");
+        console.log("orientation.lock OK");
+      }
+    } catch (e) {
+      console.warn("orientation.lock falló:", e);
+    }
+
+    await estabilizarViewport();
+    actualizarOverlayRotar();
+
+    if (estaHorizontal()) {
+      ocultarOverlayTransicionJuego();
+    } else {
+      mostrarOverlayTransicionJuego("Esperando orientación", "Gira el teléfono para continuar.");
+    }
+  }
+
+  async function salirDePantallaCompletaYDesbloquearOrientacion() {
+    try {
+      if (screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
+        console.log("orientation.unlock OK");
+      }
+    } catch (e) {
+      console.warn("orientation.unlock falló:", e);
+    }
+
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        await document.exitFullscreen();
+        console.log("exitFullscreen OK");
+      }
+    } catch (e) {
+      console.warn("exitFullscreen falló:", e);
+    }
+
+    await estabilizarViewport();
+    actualizarOverlayRotar();
+    ocultarOverlayTransicionJuego();
+  }
+
+  window.WebGL_ActivarModoJuegoHorizontal = function () {
+    modoJuegoHorizontalActivo = true;
+    actualizarOverlayRotar();
+  };
+
+  window.WebGL_DesactivarModoJuegoHorizontal = function () {
+    modoJuegoHorizontalActivo = false;
+    actualizarOverlayRotar();
+    salirDePantallaCompletaYDesbloquearOrientacion();
+  };
+
+  window.WebGL_IntentarPantallaCompletaYHorizontal = function () {
+    return intentarPantallaCompletaYHorizontal();
+  };
+
+  function crearConfigUnity() {
+    const buildUrl = "Build";
+    return {
+      dataUrl: buildUrl + "/WebGL.data.unityweb",
+      frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb",
+      codeUrl: buildUrl + "/WebGL.wasm.unityweb",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DraegerPeruSAC",
+      productName: "Camara Presurizada",
+      productVersion: "0.1.0",
+      matchWebGLToCanvasSize: true
+    };
+  }
+
+  function cargarUnity() {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "Build/WebGL.loader.js";
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("No se pudo cargar el loader de Unity."));
+      document.body.appendChild(script);
+    });
+  }
+
+  async function iniciarUnity() {
+    try {
+      aplicarTamanoViewport();
+
+      await cargarUnity();
+
+      unityInstance = await createUnityInstance(
+        unityCanvas,
+        crearConfigUnity(),
+        function () {}
+      );
+
+      await estabilizarViewport();
+      actualizarOverlayRotar();
+    } catch (e) {
+      console.error("No se pudo iniciar Unity:", e);
+    }
+  }
+
+  function onCambioViewport() {
+    aplicarTamanoViewport();
+    actualizarOverlayRotar();
+  }
+
+  window.addEventListener("resize", onCambioViewport);
+  window.addEventListener("orientationchange", onCambioViewport);
+  document.addEventListener("fullscreenchange", onCambioViewport);
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", onCambioViewport);
+  }
+
+  iniciarUnity();
     </script>
 </body>
 </html>

@@ -15,6 +15,7 @@
     <type fullname="ControlTouchCanvas" preserve="all" />
     <type fullname="ControlVisualBotonInteractuarUI" preserve="all" />
     <type fullname="DebugEntradaMovilOverlay" preserve="all" />
+    <type fullname="EntradaDiferidaJuegoWebGL" preserve="all" />
     <type fullname="FakeLightSystem.FakeLight" preserve="all" />
     <type fullname="Interactuable" preserve="all" />
     <type fullname="MagicLightProbes.MagicLightProbes" preserve="all" />
