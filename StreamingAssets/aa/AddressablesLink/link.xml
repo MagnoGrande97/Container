@@ -1,17 +1,21 @@
 <linker>
   <assembly fullname="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="AccionActivarDesactivarGameObject" preserve="all" />
     <type fullname="AccionCajonDeslizante" preserve="all" />
     <type fullname="AccionPuertaBifold" preserve="all" />
     <type fullname="AccionPuertaBisagra" preserve="all" />
     <type fullname="ActivadorModoHorizontalJuego" preserve="all" />
     <type fullname="AdaptadorLayoutPorAspecto" preserve="all" />
+    <type fullname="AreaMinimapa" preserve="all" />
     <type fullname="ArrastreLookUI" preserve="all" />
     <type fullname="CanalAudioFuente" preserve="all" />
     <type fullname="ControladorAperturaBabyLeoTN500" preserve="all" />
+    <type fullname="ControladorCamaraMinimapa" preserve="all" />
     <type fullname="ControlPausa" preserve="all" />
     <type fullname="ControlTouchCanvas" preserve="all" />
     <type fullname="ControlVisualBotonInteractuarUI" preserve="all" />
     <type fullname="DebugEntradaMovilOverlay" preserve="all" />
+    <type fullname="FakeLightSystem.FakeLight" preserve="all" />
     <type fullname="Interactuable" preserve="all" />
     <type fullname="MagicLightProbes.MagicLightProbes" preserve="all" />
     <type fullname="MagicLightProbes.MLPCombinedVolume" preserve="all" />
@@ -20,17 +24,23 @@
     <type fullname="MagicLightProbes.MLPVolume" preserve="all" />
     <type fullname="Mapbox.Unity.Map.AbstractMap" preserve="all" />
     <type fullname="Mapbox.Unity.MeshGeneration.Data.AtlasInfo" preserve="all" />
+    <type fullname="Mapbox.Unity.Utilities.OpenUrlOnButtonClick" preserve="all" />
     <type fullname="MLPSettings" preserve="all" />
     <type fullname="MostrarSoloMovilUI" preserve="all" />
     <type fullname="Outline" preserve="all" />
     <type fullname="PanelControlesJugadorUI" preserve="all" />
+    <type fullname="PanelDescripcionMaquinaUI" preserve="all" />
+    <type fullname="PanelMinimapaUI" preserve="all" />
     <type fullname="PromptInteraccionUI" preserve="all" />
+    <type fullname="ProveedorFichaMaquinaInteraccion" preserve="all" />
+    <type fullname="ProveedorPromptActivarDesactivarGameObject" preserve="all" />
     <type fullname="ProveedorPromptBabyLeoTN500" preserve="all" />
     <type fullname="ProveedorPromptCajonDeslizante" preserve="all" />
     <type fullname="ProveedorPromptPuertaBifold" preserve="all" />
     <type fullname="ProveedorPromptPuertaBisagra" preserve="all" />
     <type fullname="PuntoSpawnJugador" preserve="all" />
     <type fullname="RegistradorUIInteraccionEscena" preserve="all" />
+    <type fullname="RelojHoraActualUI" preserve="all" />
     <type fullname="ReproductorSfxPrueba" preserve="all" />
     <type fullname="SafeAreaUI" preserve="all" />
     <type fullname="ScriptablePalette" preserve="all" />
@@ -43,8 +53,10 @@
     <type fullname="UnityEngine.AzureSky.AzureTimeController" preserve="all" />
     <type fullname="UnityEngine.AzureSky.AzureWeatherController" preserve="all" />
     <type fullname="UnityEngine.AzureSky.AzureWeatherProfile" preserve="all" />
+    <type fullname="ConfiguracionFotoFichaInteraccion" preserve="nothing" serialized="true" />
     <type fullname="ControladorAperturaBabyLeoTN500/CompensadorRotacion" preserve="nothing" serialized="true" />
     <type fullname="ControladorAperturaBabyLeoTN500/SegmentoAnimado" preserve="nothing" serialized="true" />
+    <type fullname="FichaMaquinaInteraccion" preserve="nothing" serialized="true" />
     <type fullname="MagicLightProbes.MLPTracePoint" preserve="nothing" serialized="true" />
     <type fullname="Mapbox.Unity.Map.CameraBoundsTileProviderOptions" preserve="nothing" serialized="true" />
     <type fullname="Mapbox.Unity.Map.ColliderOptions" preserve="nothing" serialized="true" />
@@ -112,7 +124,9 @@
     <type fullname="UnityEngine.InputSystem.InputControlScheme/DeviceRequirement" preserve="nothing" serialized="true" />
   </assembly>
   <assembly fullname="Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.Rendering.Universal.UniversalAdditionalCameraData" preserve="all" />
     <type fullname="UnityEngine.Rendering.Universal.UniversalAdditionalLightData" preserve="all" />
+    <type fullname="UnityEngine.Rendering.Universal.TemporalAA/Settings" preserve="nothing" serialized="true" />
   </assembly>
   <assembly fullname="Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" preserve="all">
     <type fullname="UnityEngine.ResourceManagement.ResourceProviders.AssetBundleProvider" preserve="all" />
@@ -150,6 +164,7 @@
     <type fullname="UnityEngine.AudioSource" preserve="all" />
   </assembly>
   <assembly fullname="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.Camera" preserve="all" />
     <type fullname="UnityEngine.ComputeShader" preserve="all" />
     <type fullname="UnityEngine.Cubemap" preserve="all" />
     <type fullname="UnityEngine.GameObject" preserve="all" />
@@ -166,6 +181,7 @@
     <type fullname="UnityEngine.RectTransform" preserve="all" />
     <type fullname="UnityEngine.ReflectionProbe" preserve="all" />
     <type fullname="UnityEngine.RenderSettings" preserve="all" />
+    <type fullname="UnityEngine.RenderTexture" preserve="all" />
     <type fullname="UnityEngine.Shader" preserve="all" />
     <type fullname="UnityEngine.Sprite" preserve="all" />
     <type fullname="UnityEngine.SpriteRenderer" preserve="all" />
@@ -201,6 +217,8 @@
     <type fullname="UnityEngine.UI.Image" preserve="all" />
     <type fullname="UnityEngine.UI.LayoutElement" preserve="all" />
     <type fullname="UnityEngine.UI.Mask" preserve="all" />
+    <type fullname="UnityEngine.UI.RawImage" preserve="all" />
+    <type fullname="UnityEngine.UI.RectMask2D" preserve="all" />
     <type fullname="UnityEngine.UI.Scrollbar" preserve="all" />
     <type fullname="UnityEngine.UI.ScrollRect" preserve="all" />
     <type fullname="UnityEngine.UI.Shadow" preserve="all" />
