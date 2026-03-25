@@ -1,107 +1,252 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, viewport-fit=cover, user-scalable=no">
-  <title>Camara Presurizada</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1, viewport-fit=cover, user-scalable=no">
+    <title>Camara Presurizada</title>
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100svh;
-      height: 100dvh;
-      min-height: 100svh;
-      min-height: 100dvh;
-      background: #000;
-      overflow: hidden;
-      overscroll-behavior: none;
-      font-family: Arial, sans-serif;
-      touch-action: none;
-    }
+    <style>
+        :root {
+            --bg: #05070d;
+            --panel: rgba(5, 7, 13, 0.88);
+            --panel-solid: #07142f;
+            --text: #ffffff;
+            --muted: rgba(255,255,255,0.82);
+            --brand: #0091F7;
+            --brand-dark: #002766;
+            --bar-bg: rgba(255,255,255,0.14);
+            --shadow: 0 18px 48px rgba(0,0,0,0.35);
+        }
 
-    #unity-container {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100svh;
-      height: 100dvh;
-      min-height: 100svh;
-      min-height: 100dvh;
-      display: block;
-      background: #000;
-      overflow: hidden;
-    }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            overflow: hidden;
+            overscroll-behavior: none;
+            font-family: Arial, sans-serif;
+            touch-action: none;
+        }
 
-    #unity-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100svh;
-      height: 100dvh;
-      min-height: 100svh;
-      min-height: 100dvh;
-      display: block;
-      background: #000;
-      outline: none;
-    }
+        body {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+        }
 
-    #overlay-rotar {
-      position: fixed;
-      inset: 0;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      background: rgba(0, 0, 0, 0.92);
-      color: white;
-      padding: 24px;
-      box-sizing: border-box;
-      z-index: 50;
-    }
+        #unity-container {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            overflow: hidden;
+        }
 
-    #overlay-rotar .contenido {
-      max-width: 420px;
-    }
+        #unity-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: var(--bg);
+            outline: none;
+        }
 
-    #overlay-rotar h2 {
-      margin: 0 0 10px 0;
-      font-size: 24px;
-    }
+        #overlay-rotar,
+        #overlay-carga {
+            position: fixed;
+            inset: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box;
+            z-index: 1000;
+            padding: 24px;
+        }
 
-    #overlay-rotar p {
-      margin: 0;
-      line-height: 1.4;
-      opacity: 0.9;
-    }
-  </style>
+        #overlay-rotar {
+            background: rgba(0, 0, 0, 0.92);
+            color: var(--text);
+        }
+
+            #overlay-rotar .contenido {
+                max-width: 420px;
+            }
+
+            #overlay-rotar h2 {
+                margin: 0 0 10px 0;
+                font-size: 24px;
+            }
+
+            #overlay-rotar p {
+                margin: 0;
+                line-height: 1.45;
+                opacity: 0.92;
+            }
+
+        #overlay-carga {
+            background: radial-gradient(circle at center, rgba(0,145,247,0.10) 0%, rgba(0,0,0,0) 42%), rgba(5, 7, 13, 0.96);
+            color: var(--text);
+        }
+
+            #overlay-carga.visible {
+                display: flex;
+            }
+
+            #overlay-carga .panel {
+                width: min(460px, calc(100vw - 48px));
+                background: var(--panel);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 18px;
+                box-shadow: var(--shadow);
+                overflow: hidden;
+                backdrop-filter: blur(8px);
+            }
+
+            #overlay-carga .barra-superior {
+                height: 8px;
+                background: linear-gradient(90deg, var(--brand-dark), var(--brand));
+            }
+
+            #overlay-carga .contenido {
+                padding: 28px 24px 24px 24px;
+            }
+
+            #overlay-carga .titulo {
+                margin: 0 0 8px 0;
+                font-size: 24px;
+                font-weight: 700;
+                letter-spacing: 0.3px;
+            }
+
+            #overlay-carga .texto {
+                margin: 0 0 18px 0;
+                color: var(--muted);
+                line-height: 1.45;
+                font-size: 15px;
+            }
+
+            #overlay-carga .barra {
+                width: 100%;
+                height: 10px;
+                border-radius: 999px;
+                background: var(--bar-bg);
+                overflow: hidden;
+            }
+
+            #overlay-carga .barra-relleno {
+                width: 0%;
+                height: 100%;
+                border-radius: 999px;
+                background: linear-gradient(90deg, var(--brand-dark), var(--brand));
+                transition: width 0.18s linear;
+            }
+
+            #overlay-carga .porcentaje {
+                margin-top: 10px;
+                font-size: 13px;
+                color: rgba(255,255,255,0.72);
+                letter-spacing: 0.3px;
+            }
+
+            #overlay-carga .subtexto {
+                margin-top: 14px;
+                font-size: 12px;
+                color: rgba(255,255,255,0.54);
+            }
+    </style>
 </head>
 <body>
-  <div id="unity-container">
-    <canvas id="unity-canvas" tabindex="-1"></canvas>
-  </div>
-
-  <div id="overlay-rotar">
-    <div class="contenido">
-      <h2>Gira el teléfono</h2>
-      <p>
-        Para jugar mejor, coloca el dispositivo en horizontal.
-        Si no gira automáticamente, desactiva el bloqueo de rotación del teléfono.
-      </p>
+    <div id="unity-container">
+        <canvas id="unity-canvas" tabindex="-1"></canvas>
     </div>
-  </div>
 
-  <script>
+    <div id="overlay-rotar">
+        <div class="contenido">
+            <h2>Gira el teléfono</h2>
+            <p>
+                Para jugar mejor, coloca el dispositivo en horizontal.
+                Si no gira automáticamente, desactiva el bloqueo de rotación del teléfono.
+            </p>
+        </div>
+    </div>
+
+    <div id="overlay-carga" class="visible">
+        <div class="panel">
+            <div class="barra-superior"></div>
+            <div class="contenido">
+                <div class="titulo" id="carga-titulo">Iniciando experiencia</div>
+                <div class="texto" id="carga-texto">Cargando...</div>
+
+                <div class="barra">
+                    <div class="barra-relleno" id="carga-barra"></div>
+                </div>
+
+                <div class="porcentaje" id="carga-porcentaje">0%</div>
+                <div class="subtexto">Dräger Simulation Core</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const unityContainer = document.getElementById("unity-container");
     const unityCanvas = document.getElementById("unity-canvas");
     const overlayRotar = document.getElementById("overlay-rotar");
+    const overlayCarga = document.getElementById("overlay-carga");
+    const cargaTitulo = document.getElementById("carga-titulo");
+    const cargaTexto = document.getElementById("carga-texto");
+    const cargaBarra = document.getElementById("carga-barra");
+    const cargaPorcentaje = document.getElementById("carga-porcentaje");
 
     let unityInstance = null;
     let modoJuegoHorizontalActivo = false;
+    let transicionModoJuegoActiva = false;
+    let ocultarCargaPendiente = null;
+
+    function obtenerViewportActual() {
+      if (window.visualViewport) {
+        return {
+          width: Math.round(window.visualViewport.width),
+          height: Math.round(window.visualViewport.height)
+        };
+      }
+
+      return {
+        width: Math.round(window.innerWidth),
+        height: Math.round(window.innerHeight)
+      };
+    }
 
     function estaHorizontal() {
-      return window.innerWidth > window.innerHeight;
+      const vp = obtenerViewportActual();
+      return vp.width > vp.height;
+    }
+
+    function aplicarTamanoViewport() {
+      const vp = obtenerViewportActual();
+      const w = Math.max(1, vp.width);
+      const h = Math.max(1, vp.height);
+
+      document.documentElement.style.width = w + "px";
+      document.documentElement.style.height = h + "px";
+
+      document.body.style.width = w + "px";
+      document.body.style.height = h + "px";
+
+      unityContainer.style.width = w + "px";
+      unityContainer.style.height = h + "px";
+
+      unityCanvas.style.width = w + "px";
+      unityCanvas.style.height = h + "px";
+    }
+
+    function notificarResizeUnity() {
+      aplicarTamanoViewport();
+      window.dispatchEvent(new Event("resize"));
     }
 
     function actualizarOverlayRotar() {
@@ -109,7 +254,56 @@
         (modoJuegoHorizontalActivo && !estaHorizontal()) ? "flex" : "none";
     }
 
+    function mostrarOverlayCarga(titulo, texto, progreso) {
+      if (typeof titulo === "string") cargaTitulo.textContent = titulo;
+      if (typeof texto === "string") cargaTexto.textContent = texto;
+      if (typeof progreso === "number") setProgresoCarga(progreso);
+
+      overlayCarga.classList.add("visible");
+    }
+
+    function ocultarOverlayCarga() {
+      overlayCarga.classList.remove("visible");
+    }
+
+    function setProgresoCarga(valor) {
+      const v = Math.max(0, Math.min(1, valor));
+      cargaBarra.style.width = (v * 100).toFixed(0) + "%";
+      cargaPorcentaje.textContent = (v * 100).toFixed(0) + "%";
+    }
+
+    function limpiarOcultadoPendiente() {
+      if (ocultarCargaPendiente != null) {
+        clearTimeout(ocultarCargaPendiente);
+        ocultarCargaPendiente = null;
+      }
+    }
+
+    async function esperarFrames(cantidad) {
+      for (let i = 0; i < cantidad; i++) {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+      }
+    }
+
+    async function estabilizarViewport() {
+      aplicarTamanoViewport();
+      await esperarFrames(2);
+      aplicarTamanoViewport();
+
+      await new Promise(resolve => setTimeout(resolve, 80));
+      aplicarTamanoViewport();
+
+      await new Promise(resolve => setTimeout(resolve, 180));
+      aplicarTamanoViewport();
+
+      notificarResizeUnity();
+    }
+
     async function intentarPantallaCompletaYHorizontal() {
+      transicionModoJuegoActiva = true;
+      limpiarOcultadoPendiente();
+      mostrarOverlayCarga("Preparando experiencia", "Cambiando a modo horizontal...", 1);
+
       try {
         if (!document.fullscreenElement && unityCanvas.requestFullscreen) {
           try {
@@ -117,7 +311,6 @@
           } catch (_) {
             await unityCanvas.requestFullscreen();
           }
-          console.log("Fullscreen OK");
         }
       } catch (e) {
         console.warn("requestFullscreen falló:", e);
@@ -126,20 +319,28 @@
       try {
         if (screen.orientation && screen.orientation.lock) {
           await screen.orientation.lock("landscape");
-          console.log("orientation.lock OK");
         }
       } catch (e) {
         console.warn("orientation.lock falló:", e);
       }
 
+      await estabilizarViewport();
       actualizarOverlayRotar();
+
+      ocultarCargaPendiente = setTimeout(() => {
+        transicionModoJuegoActiva = false;
+        if (estaHorizontal()) {
+          ocultarOverlayCarga();
+        } else {
+          mostrarOverlayCarga("Esperando orientación", "Gira el teléfono para continuar.", 1);
+        }
+      }, 220);
     }
 
     async function salirDePantallaCompletaYDesbloquearOrientacion() {
       try {
         if (screen.orientation && screen.orientation.unlock) {
           screen.orientation.unlock();
-          console.log("orientation.unlock OK");
         }
       } catch (e) {
         console.warn("orientation.unlock falló:", e);
@@ -148,12 +349,12 @@
       try {
         if (document.fullscreenElement && document.exitFullscreen) {
           await document.exitFullscreen();
-          console.log("exitFullscreen OK");
         }
       } catch (e) {
         console.warn("exitFullscreen falló:", e);
       }
 
+      await estabilizarViewport();
       actualizarOverlayRotar();
     }
 
@@ -181,7 +382,8 @@
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DraegerPeruSAC",
         productName: "Camara Presurizada",
-        productVersion: "0.1.0"
+        productVersion: "0.1.0",
+        matchWebGLToCanvasSize: true
       };
     }
 
@@ -197,23 +399,60 @@
 
     async function iniciarUnity() {
       try {
+        aplicarTamanoViewport();
+        mostrarOverlayCarga("Iniciando experiencia", "Cargando motor...", 0);
+
         await cargarUnity();
+
         unityInstance = await createUnityInstance(
           unityCanvas,
           crearConfigUnity(),
-          function () {}
+          function (progress) {
+            const p = Math.max(0, Math.min(1, progress));
+            setProgresoCarga(p);
+
+            if (p < 0.25) {
+              cargaTexto.textContent = "Cargando motor...";
+            } else if (p < 0.60) {
+              cargaTexto.textContent = "Cargando contenido...";
+            } else if (p < 0.95) {
+              cargaTexto.textContent = "Preparando escena...";
+            } else {
+              cargaTexto.textContent = "Inicializando...";
+            }
+          }
         );
+
+        await estabilizarViewport();
+        setProgresoCarga(1);
         actualizarOverlayRotar();
+
+        if (!transicionModoJuegoActiva)
+          ocultarOverlayCarga();
       } catch (e) {
         console.error("No se pudo iniciar Unity:", e);
+        mostrarOverlayCarga("Error de inicio", "No se pudo cargar la experiencia.", 1);
       }
     }
 
-    window.addEventListener("resize", actualizarOverlayRotar);
-    window.addEventListener("orientationchange", actualizarOverlayRotar);
-    document.addEventListener("fullscreenchange", actualizarOverlayRotar);
+    function onCambioViewport() {
+      aplicarTamanoViewport();
+      actualizarOverlayRotar();
+
+      if (transicionModoJuegoActiva) {
+        mostrarOverlayCarga("Preparando experiencia", "Ajustando pantalla...", 1);
+      }
+    }
+
+    window.addEventListener("resize", onCambioViewport);
+    window.addEventListener("orientationchange", onCambioViewport);
+    document.addEventListener("fullscreenchange", onCambioViewport);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", onCambioViewport);
+    }
 
     iniciarUnity();
-  </script>
+    </script>
 </body>
 </html>
